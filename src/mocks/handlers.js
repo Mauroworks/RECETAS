@@ -1,79 +1,120 @@
 // src/mocks/handlers.js
-import { graphql, http, HttpResponse } from 'msw';
+import { graphql, http, HttpResponse } from 'msw'
 
-const events = [
+const recipes = [
   {
-    id: 'evt-1',
-    title: 'Concierto de Rock Sinfónico',
-    date: '2024-10-26',
-    place: 'Auditorio Nacional',
-    category: 'Conciertos',
-    organizer: 'Music Masters Inc.',
-    confirmed_attendees: 1250,
-    description: 'Una noche inolvidable con los grandes éxitos del rock interpretados por una orquesta sinfónica completa. ¡No te lo puedes perder!',
+    id: '1',
+    title: 'Paella Valenciana',
+    difficulty: 'Difícil',
+    category: 'Plato Principal',
+    ingredients: ['Arroz', 'Pollo', 'Conejo', 'Judías verdes', 'Azafrán'],
+    method: 'Sofreír la carne, añadir verduras, el agua y finalmente el arroz. Cocinar 20 min.',
+    time: '90 min'
   },
   {
-    id: 'evt-2',
-    title: 'Conferencia de IA y Futuro',
-    date: '2024-11-15',
-    place: 'Centro de Convenciones',
-    category: 'Conferencias',
-    organizer: 'Tech Innovators',
-    confirmed_attendees: 800,
-    description: 'Expertos internacionales discuten el impacto de la Inteligencia Artificial en nuestras vidas y en el futuro de la humanidad.',
+    id: '2',
+    title: 'Tarta de Queso',
+    difficulty: 'Fácil',
+    category: 'Postres',
+    ingredients: ['Queso crema', 'Huevos', 'Azúcar', 'Nata', 'Galletas'],
+    method: 'Mezclar ingredientes, verter sobre base de galleta y hornear.',
+    time: '45 min'
   },
   {
-    id: 'evt-3',
-    title: 'Final de la Liga de eSports',
-    date: '2024-11-22',
-    place: 'Arena Gamer',
-    category: 'Eventos Deportivos',
-    organizer: 'Global Gaming League',
-    confirmed_attendees: 2500,
-    description: 'Los mejores equipos compiten por el campeonato en la final más esperada del año. Vive la emoción de los eSports en vivo.',
+    id: '3',
+    title: 'Gazpacho Andaluz',
+    difficulty: 'Fácil',
+    category: 'Entrante',
+    ingredients: ['Tomates', 'Pimiento', 'Pepino', 'Ajo', 'Aceite de oliva'],
+    method: 'Triturar todo muy bien y servir frío.',
+    time: '15 min'
   },
   {
-    id: 'evt-4',
-    title: 'Taller de Desarrollo con React',
-    date: '2024-12-05',
-    place: 'Online',
-    category: 'Conferencias',
-    organizer: 'Dev Community',
-    confirmed_attendees: 150,
-    description: 'Aprende a construir aplicaciones web modernas con React en este taller intensivo de un día, impartido por desarrolladores senior.',
+    id: '4',
+    title: 'Lasaña de Carne',
+    difficulty: 'Media',
+    category: 'Plato Principal',
+    ingredients: ['Carne picada', 'Placas de lasaña', 'Tomate frito', 'Bechamel', 'Queso rallado'],
+    method: 'Cocinar la carne con tomate, montar capas con la pasta y bechamel, hornear hasta gratinar.',
+    time: '60 min'
   },
-];
+  {
+    id: '5',
+    title: 'Salmón al Horno',
+    difficulty: 'Fácil',
+    category: 'Plato Principal',
+    ingredients: ['Lomos de salmón', 'Limón', 'Eneldo', 'Aceite de oliva', 'Sal', 'Pimienta'],
+    method: 'Colocar el salmón en bandeja, añadir especias y limón, hornear a 180°C.',
+    time: '20 min'
+  },
+  {
+    id: '6',
+    title: 'Croquetas de Jamón',
+    difficulty: 'Media',
+    category: 'Entrante',
+    ingredients: ['Jamón serrano', 'Harina', 'Leche', 'Mantequilla', 'Huevo', 'Pan rallado'],
+    method: 'Hacer bechamel con jamón, enfriar masa, dar forma, empanar y freír.',
+    time: '50 min'
+  },
+  {
+    id: '7',
+    title: 'Ensalada César',
+    difficulty: 'Fácil',
+    category: 'Entrante',
+    ingredients: ['Lechuga romana', 'Pollo a la plancha', 'Picatostes', 'Queso parmesano', 'Salsa César'],
+    method: 'Mezclar lechuga, pollo y picatostes. Añadir salsa y queso por encima.',
+    time: '15 min'
+  },
+  {
+    id: '8',
+    title: 'Brownie de Chocolate',
+    difficulty: 'Fácil',
+    category: 'Postres',
+    ingredients: ['Chocolate negro', 'Mantequilla', 'Azúcar', 'Huevos', 'Harina', 'Nueces'],
+    method: 'Fundir chocolate con mantequilla, mezclar con resto de ingredientes y hornear.',
+    time: '35 min'
+  },
+  {
+    id: '9',
+    title: 'Flan de Huevo',
+    difficulty: 'Media',
+    category: 'Postres',
+    ingredients: ['Huevos', 'Leche', 'Azúcar', 'Caramelo líquido'],
+    method: 'Batir huevos con leche y azúcar. Verter en moldes con caramelo y cocinar al baño maría.',
+    time: '45 min'
+  }
+]
 
-// Define los manejadores de tus peticiones aquí.
 export const handlers = [
-  // --- MANEJADORES PARA LA API REST (se mantienen intactos) ---
-  http.get('/api/eventos', () => {
-    return HttpResponse.json(events);
+  // 1. API REST para listar recetas (solo info básica)
+  http.get('/api/recipes', () => {
+    // Filtramos para no enviar detalles pesados en la lista
+    const summary = recipes.map(({ id, title, difficulty, category }) => ({
+      id,
+      title,
+      difficulty,
+      category
+    }))
+    
+    return HttpResponse.json(summary)
   }),
 
-  http.get('/api/eventos/:id', ({ params }) => {
-    const event = events.find(e => e.id === params.id);
-    if (!event) {
-      return new HttpResponse(null, { status: 404, statusText: 'Not Found' });
+  // 2. API GraphQL para detalles (ingredientes, método, tiempo)
+  graphql.query('GetRecipeDetails', ({ variables }) => {
+    const recipe = recipes.find(r => r.id === variables.id)
+
+    if (!recipe) {
+      return HttpResponse.json({ errors: [{ message: 'Receta no encontrada' }] })
     }
-    return HttpResponse.json(event);
-  }),
 
-  // --- MANEJADORES PARA LA API GRAPHQL (nuevos) ---
-  graphql.query('AllEvents', () => {
     return HttpResponse.json({
-      data: { events: events },
-    });
-  }),
-
-  graphql.query('EventDetails', ({ variables }) => {
-    const { id } = variables;
-    const event = events.find(e => e.id === id);
-    if (!event) {
-      return new HttpResponse(null, { status: 404 });
-    }
-    return HttpResponse.json({
-      data: { event: event },
-    });
-  }),
-];
+      data: {
+        recipe: {
+          ingredients: recipe.ingredients,
+          method: recipe.method,
+          time: recipe.time
+        }
+      }
+    })
+  })
+]

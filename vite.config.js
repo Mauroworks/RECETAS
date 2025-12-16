@@ -4,5 +4,10 @@ import { defineConfig } from 'vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/centroeventos/'
+  base: '/RECETAS/',
+  test: {
+    environment: 'happy-dom',
+    globals: true,
+    setupFiles: './src/components/setupTests.js',
+  }
 })
