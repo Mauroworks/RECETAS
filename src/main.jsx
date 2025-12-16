@@ -9,11 +9,6 @@ import './index.css'
 console.log('VITE mode:', import.meta.env.MODE)
 
 async function enableMocking() {
-  // Ejecutar solo en modo 'development'
-  if (import.meta.env.MODE !== 'development') {
-    return
-  }
-
   const { worker } = await import('./mocks/browser')
 
   // Asegurarnos de usar la base correcta (Vite puede exponer import.meta.env.BASE_URL)
@@ -21,7 +16,12 @@ async function enableMocking() {
   const swUrl = `${baseUrl.replace(/\/$/, '')}/mockServiceWorker.js`
 
   // Pasa la URL del service worker al arrancar MSW
-  return worker.start({ serviceWorker: { url: swUrl } })
+  return worker.start({
+    serviceWorker: { url: swUrl },
+    onUnhandledRequest(req) {
+      console.error('Found an unhandled %s request to %s', req.method, req.url.href)
+    }
+  })
 }
 
 // Configuración de Apollo Client
